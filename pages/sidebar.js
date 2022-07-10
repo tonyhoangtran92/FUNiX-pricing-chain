@@ -3,8 +3,8 @@ import { Link } from '@hyperapp/router';
 
 const Fragment = (props, children) => children;
 
-const Profile = ({ profile, register, inputProfile }) => {
-  const hasProfile = profile && profile.nSessions > 0;
+const Profile = ({ profile, register, inputProfile,update}) => {
+  const hasProfile = profile && profile.account != '0x0000000000000000000000000000000000000000';
   let newProfile = {};
   if (profile) {
     return hasProfile ? (
@@ -34,7 +34,56 @@ const Profile = ({ profile, register, inputProfile }) => {
           </div>
           <small>{profile.deviation / 100}%</small>
         </li>
+
+
+      <div id="updateParticipant" style="display:none;">
+        <li class='nav-title'>Update</li>
+      <li class='nav-item px-3 mb-2'>
+        <div>
+          <small class='text-muted'>
+            <b>Fullname</b>
+          </small>
+        </div>
+        <input
+          class='form-control form-control-sm'
+          type='text'
+          value={profile.fullname}
+          oninput={e => {
+            inputProfile({ field: 'fullname', value: e.target.value });
+          }}
+        ></input>
+      </li>
+      <li class='nav-item px-3 mb-2'>
+        <div>
+          <small class='text-muted'>
+            <b>Email</b>
+          </small>
+        </div>
+        <input
+          class='form-control form-control-sm'
+          type='email'
+          value={profile.email}
+          oninput={e => {
+            inputProfile({ field: 'email', value: e.target.value });
+          }}
+        ></input>
+      </li>
+      <li class='nav-item px-3 mb-2'>
+        <button
+          class='btn  btn-sm btn-ghost-primary btn-block '
+          type='button'
+          onclick={update}
+        >
+          Update
+        </button>
+      </li>
+      </div>
+
       </>
+
+      
+    
+
     ) : (
       <>
         <li class='nav-title'>Register</li>
@@ -112,7 +161,8 @@ const Sidebar = ({
   isAdmin,
   profile,
   register,
-  inputProfile
+  inputProfile,
+  updateParticipantInfo
 }) => {
   return (
     <div class='sidebar'>
@@ -128,6 +178,7 @@ const Sidebar = ({
             profile={profile}
             register={register}
             inputProfile={inputProfile}
+            update={updateParticipantInfo}
           ></Profile>
           <li class='nav-divider'></li>
           <li class='nav-title'>View all</li>

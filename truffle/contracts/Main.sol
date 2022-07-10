@@ -42,7 +42,7 @@ contract Main {
     // TODO: Functions
 
     //function register to allow participant register to system pricing
-    function register(string memory _fullname, string memory _email) public {
+    function register(string memory _fullname, string memory _email) public returns (string memory, string memory) {
         if(participants[msg.sender].account == address(0)) {
             participants[msg.sender].account = msg.sender;
             participants[msg.sender].fullname = _fullname;
@@ -51,6 +51,8 @@ contract Main {
             participants[msg.sender].deviation = 0;
             nParticipants = iParticipants.push(msg.sender);
         }
+
+        return (_fullname, _email);
     }
 
     //function to increment number of session that participant joined

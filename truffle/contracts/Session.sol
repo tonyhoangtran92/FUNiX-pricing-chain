@@ -26,16 +26,16 @@ contract Session {
     string public name;
     string public description;
     string public image;
-    address [] public iParticipants;
+    address[] public iParticipants;
     mapping (address => uint) public pricings;
     uint public proposedPrice;
     uint public nParticipants;
-    
+
     constructor(address _mainContract, string memory _name, string memory _description, string memory _image) public {
         // Get Main Contract instance
         mainContract = _mainContract;
         MainContract = Main(_mainContract);
-        
+
         // TODO: Init Session contract
         creator = MainContract.admin();
         state = State.CREATED;
@@ -67,12 +67,12 @@ contract Session {
 
     //function for admin start Session
     function startSession(uint _timeOut) public onlyAdmin {
-        require(state ==State.CREATED || state == State.STOPPED, "Cannot start session");
+        require(state==State.CREATED || state==State.STOPPED,"Cannot start session");
         if(state == State.CREATED) {
             if(_timeOut == 0) {
                 timeOut = 0;
             } else {
-                timeOut = _timeOut.add (now);
+                timeOut = _timeOut.add(now);
             }
             state = State.ONGOING;
         } else {
@@ -114,7 +114,7 @@ contract Session {
     function calculateFinalPrice() public onlyAdmin validState(State.CLOSED) {
         uint totalDeviation = 0;
         //calucate total Deviation of all participant in a Session
-        for(uint i=0; i<nParticipants; i++) {
+        for(uint i = 0; i<nParticipants; i++) {
             address tempPar = iParticipants[i];
             totalDeviation = totalDeviation.add(MainContract.getDeviation(tempPar));
         }
@@ -122,21 +122,20 @@ contract Session {
         //calculate proposedPrice
         for(uint j = 0; j<nParticipants; j++) {
             address _address = iParticipants[j];
-            proposedPrice = proposedPrice.add(pricings[_address].mul((10000-MainContract.getDeviation(_address))));
+            proposedPrice = proposedPrice.add(pricings[_address].mul((100 - MainContract.getDeviation(_address))));
         }
-        proposedPrice = proposedPrice.mul(100).div(nParticipants.mul(10000).sub(totalDeviation));
+        proposedPrice = proposedPrice.div(nParticipants.mul(100).sub(totalDeviation));
 
         //update Deviation for each participant
         for(uint k = 0; k<nParticipants; k++) {
             uint deviationNew = 0;
             address p = iParticipants[k];
-            if(proposedPrice >= pricings[p].mul(100)){
-                deviationNew = (proposedPrice - 100*pricings[p])*100;
+            if(proposedPrice >= pricings[p]){
+                deviationNew = (proposedPrice - pricings[p]).mul(100).div(proposedPrice);
             } else {
-                deviationNew = (100*pricings[p] - proposedPrice)*100;
+                deviationNew = (pricings[p] - proposedPrice).mul(100).div(proposedPrice);
             }
-            uint genDevi = (MainContract.getDeviation(p)*nParticipants*proposedPrice + 100*deviationNew);
-            genDevi = genDevi.div(((nParticipants.add(1)).mul(proposedPrice)));
+            uint genDevi = ((MainContract.getDeviation(p)*nParticipants + deviationNew).div(nParticipants.add(1)));
             MainContract.setDeviation(p,genDevi);
         }
         state = State.FINISHED;

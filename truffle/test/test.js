@@ -5,7 +5,7 @@ let MainInstance;
 let stateBeforeStop;
 
 //let startBeforeStart;
-contract('contract test case', async accounts => {
+contract('Contract test case', async accounts => {
 
     it('Test Main contract deployment', async () => {
         MainInstance = await Main.deployed();
@@ -14,13 +14,13 @@ contract('contract test case', async accounts => {
 
     it('Test Session contract deployment', async () => {
         module.exports = function (deployer) {
-            return deployer.deploy(Session, MainInstance.address, 'POKER', 'POKER', 'https://cf.shopee.vn/file/3af8bc8e608236fc4986ee7ce6d739e0');
+            return deployer.deploy(Session, MainInstance.address, 'COMPUTER1', 'COMPUTER1', 'https://ipfs.io/ipfs/QmewTNKfCk7yjrVPsWoCpmidKn5x7JV7Lmv6K68BDtqQuP');
         };
-        SessionInstance = await Session.new(MainInstance.address, 'POKER', 'POKER', 'https://cf.shopee.vn/file/3af8bc8e608236fc4986ee7ce6d739e0');
+        SessionInstance = await Session.new(MainInstance.address, 'COMPUTER1', 'COMPUTER1', 'https://ipfs.io/ipfs/QmewTNKfCk7yjrVPsWoCpmidKn5x7JV7Lmv6K68BDtqQuP');
         assert.notEqual(SessionInstance, undefined, 'Failed tp deploy session');
     });
 
-    it('Test case addSession Function', async () => {
+    it('Test addSession Function', async () => {
         assert.equal(SessionInstance.address, await MainInstance.sessions(0), 'Failed to add address of Session to Main');
     });
 
@@ -115,10 +115,10 @@ contract('contract test case', async accounts => {
     });
 
     it('Cannot start session in state CLOSED', async () => {
-        await SessionInstance.closeSession({from: accounts[1]});
+        await SessionInstance.closeSession({ from: accounts[0] });
         assert.equal(await SessionInstance.state(), 2, 'Invalid state CLOSED');
         try {
-            await SessionInstance.startSession(600, { from: accounts[0] });
+            await SessionInstance.startSession(1000, { from: accounts[0] });
             assert(false);
         } catch (e) {
             assert(true);
@@ -129,7 +129,7 @@ contract('contract test case', async accounts => {
         assert.equal(Number(await SessionInstance.proposedPrice()), 0, 'Failed to get final price');
         await SessionInstance.calculateFinalPrice({ from: accounts[0] });
         let proposedPrice = Number(await SessionInstance.proposedPrice());
-        assert.equal(proposedPrice, 7000, "Failed to calculate final price");
+        assert.equal(proposedPrice, 70, "Failed to calculate final price");
         assert.equal(await SessionInstance.state(), 3, 'Failed to calculate final price');
     });
 
@@ -138,7 +138,7 @@ contract('contract test case', async accounts => {
     });
 
     it('Can not set final price with different state CLOSED', async () => {
-        assert.notEqual(await SessionInstance.state(), 2, 'Valid sate FINISHED');
+        assert.notEqual(await SessionInstance.state(), 2, 'Valid state FINISHED');
         try {
             await SessionInstance.calculateFinalPrice({ from: accounts[0] });
             assert(false);
@@ -166,12 +166,13 @@ contract('contract test case', async accounts => {
     });
 
     it('Close session when expire timeout', async () => {
-        let _session = await Session.new(MainInstance.address, 'POKER', 'POKER', 'https://cf.shopee.vn/file/3af8bc8e608236fc4986ee7ce6d739e0');
+        let _session = await Session.new(MainInstance.address, 'COMPUTER1', 'COMPUTER1', 'https://ipfs.io/ipfs/QmewTNKfCk7yjrVPsWoCpmidKn5x7JV7Lmv6K68BDtqQuP');
         await _session.startSession(2, { from: accounts[0] });
         await _session.priceProduct(80, { from: accounts[1] });
         function timeout(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
+
 
         await timeout(2000);
         await _session.priceProduct(180, { from: accounts[1] });
@@ -196,7 +197,7 @@ contract('contract test case', async accounts => {
     it('Update participant information', async () => {
         let par = await MainInstance.participants(accounts[1]);
         let name = par[1] + "test";
-        await MainInstance.updateParticipantInfo(name, 'test', accounts[1]), { from: accounts[1] };
+        await MainInstance.updateParticipantInfo(name, 'test', accounts[1], { from: accounts[1] });
         par = await MainInstance.participants(accounts[1]);
         assert.equal(name, par[1], 'Failed to update participant info');
     });

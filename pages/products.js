@@ -3,8 +3,10 @@ import './products.css';
 
 const Fragment = (props, children) => children;
 
-const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
+const Product = ({ product, newProduct, input, create, isAdmin, fn}) => {
   let price;
+  let name;
+  let description;
   return (
     <>
       {product ? (
@@ -13,13 +15,9 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
             <strong>{product.name}</strong>
           </div>
           <div class='card-body'>
-            <img
+            <img onclick={e=>myfunction()}
               class='rounded float-left product-image'
-              src={
-                product.image.startsWith('http')
-                  ? product.image
-                  : '//robohash.org/' + product.image + '?set=set4&bgset=bg2'
-              }
+              src={ product.image.startsWith('http') ? product.image : '//robohash.org/' + product.image + '?set=set4&bgset=bg2'}
             ></img>
 
             <dl class='row'>
@@ -51,31 +49,30 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
                   <button
                     class='btn btn-outline-primary'
                     type='button'
-                    onclick={e => fn('start')}
-                  >
+                    onclick={e => fn({action:'start',data:price})}>
                     Start
                   </button>
                   <button
                     class='btn btn-outline-primary'
                     type='button'
-                    onclick={e => fn('stop')}
+                    onclick={e => fn({action:'stop'})}
                   >
                     Stop
                   </button>
                 </div>
-                <input
+                <input 
                   type='number'
                   class='form-control'
-                  placeholder='price'
+                  placeholder='Enter timeOut' 
                   oninput={e => (price = e.target.value)}
                 />
                 <div class='input-group-append'>
                   <button
                     class='btn btn-outline-primary'
                     type='button'
-                    onclick={e => fn('pricing', price)}
+                    onclick={e => fn({action:'close'})}
                   >
-                    Set price and close
+                    Set final price and close
                   </button>
                 </div>
               </div>
@@ -90,8 +87,8 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
                   oninput={e => (price = e.target.value)}
                 />
                 <div class='input-group-append'>
-                  <button class='btn btn-primary' type='button'>
-                    Propose price
+                  <button class='btn btn-primary' type='button' onclick={e => fn({action:'pricing',data:price})}>
+                    Given Price
                   </button>
                 </div>
               </div>
@@ -101,7 +98,8 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
       ) : (
         <></>
       )}
-      <div class='card'>
+      
+      <div class='card' id="createSession">
         <div class='card-header'>
           <strong>Create new session</strong>
         </div>
@@ -164,6 +162,81 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
           </button>
         </div>
       </div>
+
+      {/* test phan update product */}
+      
+      
+    {product? ( 
+      <div class='card' id="updateProduct">
+        <div class='card-header'>
+          <strong>update product information</strong>
+        </div>
+        <div class='card-body'>
+          <div class='row'>
+            <div class='col-sm-12'>
+              <div class='form-group'>
+                <label for='name'>Product name</label>
+                <input
+                  type='text'
+                  class='form-control'
+                  id='_name'
+                  value={product.name}
+                  // oninput={e => {
+                  //   input({ field: 'name', value: e.target.value });
+                  // }}
+                  oninput={e=>(name = e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-sm-12'>
+              <div class='form-group'>
+                <label for='description'>Product description</label>
+                <input
+                  type='text'
+                  class='form-control'
+                  id='_description'
+                  value={product.description}
+                  // oninput={e => {
+                  //   input({ field: 'description', value: e.target.value });
+                  // }}
+                  oninput = {e=>(description = e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-sm-12'>
+              <div class='form-group'>
+                <label for='image'>Product image</label>
+                <input
+                  type='text'
+                  class='form-control'
+                  id='_image'
+                  placeholder='http://'
+                  value={product.image}
+                  readonly = 'true'
+                  // oninput={e => {
+                  //   input({ field: 'image', value: e.target.value });
+                  // }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class='card-footer'>
+          <button type='submit' class='btn btn-primary' onclick={e=>fn({action:'update',name:name,description:description,_name:product.name,_description:product.description})}>
+            update
+          </button>
+        </div>
+      </div>
+    ):(
+      <></>
+    )}
+      {/* test phan update product */}
     </>
   );
 };
@@ -176,13 +249,15 @@ const ProductRow = ({ product, index, select, currentIndex }) => (
     <th scope='row'>{product.no}</th>
     <td>{product.name}</td>
     <td>{product.description} </td>
-    <td>$ {product.price}</td>
+    <td>$ {product.price /100}</td>
     <td>{product.status}</td>
+    {/* <td><button  id='editProduct' onclick={e=>myfunction()}>update</button></td> */}
+    {/* <td><i class='nav-icon cui-people' onclick={e=>myfunction()}></i></td> */}
   </tr>
 );
 const Products = ({ match }) => (
   { newProduct, sessions, currentProductIndex, isAdmin },
-  { inputNewProduct, createProduct, selectProduct, sessionFn }
+  { inputNewProduct, createProduct, selectProduct, sessionFn}
 ) => {
   return (
     <div class='d-flex w-100 h-100'>
@@ -191,7 +266,7 @@ const Products = ({ match }) => (
           <thead>
             <tr>
               <th scope='col'>#</th>
-              <th scope='col'>Product</th>
+              <th scope='col'>Product Name</th>
               <th scope='col'>Description</th>
               <th scope='col'>Proposed price</th>
               <th scope='col'>Status</th>

@@ -1,8 +1,8 @@
 import { app, h } from 'hyperapp';
 import './participants.css';
 
-const ParticipantRow = participant => (
-  <tr class='participant'>
+const ParticipantRow = ({participant,edit}) => (
+  <tr class='participant' onclick={e=>edit(participant.account)} >
     <td scope='row' class='text-center'>
       <img
         class='img-avatar img-thumbnail'
@@ -22,11 +22,11 @@ const ParticipantRow = participant => (
       {participant.deviation / 100} %
     </td>
     <td scope='row' class='align-middle text-center'>
-      <code>{participant.address}</code>
+      <code>{participant.account}</code>
     </td>
   </tr>
 );
-const Participants = ({ match }) => ({ participants }) => (
+const Participants = ({ match }) => ({ participants},{edit}) => (
   <div class='d-flex w-100 h-100 bg-white'>
     <div class='products-list'>
       <table class='table table-hover table-striped'>
@@ -49,12 +49,18 @@ const Participants = ({ match }) => ({ participants }) => (
         <tbody>
           {(participants || []).map((p, i) => {
             p.no = i + 1;
+            return (
+            <ParticipantRow 
+            participant={p} 
+            edit={edit}
+            ></ParticipantRow>
+            );
             return ParticipantRow(p);
           })}
         </tbody>
       </table>
     </div>
-    {/* <div class='p-2 flex product-detail'></div> */}
+    <div class='p-2 flex product-detail'></div>
   </div>
 );
 

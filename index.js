@@ -196,12 +196,12 @@ const actions = {
           try{
             await sessionContract.methods.priceProduct(data.data).send({from: state.account});
           }catch(e){
-            alert('account not yet register');
+            alert('Account not yet register');
           }
         }else if(stateOfSession == 0){
-          alert('session not yet start');
+          alert('Session not yet start');
         }else{
-          alert('session already closed');
+          alert('Session already closed');
         }
         // document.location.reload();
         break;
@@ -215,9 +215,9 @@ const actions = {
           await sessionContract.methods.closeSession().send({from:state.account});
           await sessionContract.methods.calculateFinalPrice().send({from:state.account});
         }else if(stateOfSession == 0){
-          alert('session not yet start');
+          alert('Session not yet start');
         }else if(stateOfSession == 4){
-          alert('session already STOPPED');
+          alert('Session already STOPPED');
         }else{
           alert('Final price already set');
         }
