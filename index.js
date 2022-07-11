@@ -14,17 +14,11 @@ const Fragment = (props, children) => children;
 const Web3 = require('web3');
 let web3js;
 
-// if (typeof web3js !== 'undefined') {
-//   web3js = new Web3(web3.currentProvider);
-// } else {
-//   web3js = new Web3('ws://localhost:7545');
-// }
- // Modern dapp browsers...
- if (window.ethereum) {
+if (window.ethereum) {
   web3js = new Web3(window.ethereum);
   try {
     // Request account access
-     window.ethereum.enable();
+    window.ethereum.enable();
   } catch (error) {
     // User denied account access...
     console.error("User denied account access")
@@ -36,16 +30,11 @@ else if (window.web3js) {
 }
 // If no injected web3 instance is detected, fall back to Ganache
 else {
-  // web3js = new Web3('https://ropsten.infura.io/v3/672d4ad6f9324fb8a15f2c062bf826f8');
-  web3js = new Web3('ws://localhost:8545');
+  web3js = new Web3('ws://localhost:7545');
 }
 
-// window.ethereum.on('accountsChanged', function (accounts) {
-//   document.location.reload();
-// })
-
-import Main from './truffle/build/contracts/Main.json';
-import Session from './truffle/build/contracts/Session.json';
+import Main from './contracts/Main.json';
+import Session from './contracts/Session.json';
 
 const mainContract = new web3js.eth.Contract(Main.abi, config.mainContract);
 var state = {
@@ -62,7 +51,6 @@ var state = {
   newProduct: {},
   sessions: [],
   currentProductIndex: 0
-  //data:0
 };
 
 // Functions of Main Contract
@@ -87,7 +75,7 @@ const contractFunctions = {
   // Register new participant
   register: (fullname, email) =>
     mainContract.methods.register(fullname, email).send,
-  
+
   // Get number of sessions  
   nSessions: mainContract.methods.nSessions().call,
 
@@ -133,7 +121,6 @@ const actions = {
       })
       .send({ from: state.account });
     actions.getSessions();
-    // document.location.reload();
   },
 
   selectProduct: i => state => {
@@ -141,31 +128,26 @@ const actions = {
       currentProductIndex: i
     };
   },
-  // setData:_data =>state =>{
-  //   return {
-  //     data:_data
-  //   };
 
-  // },
-  sessionFn: (data) => async (state, {}) => {
+  sessionFn: (data) => async (state, { }) => {
     //console.log('action : '+data.action+', data : '+data.data);
-    if(!data.data){
+    if (!data.data) {
       data.data = 0;
     }
-    console.log('gia tri timeout : '+data.data);
+    console.log('gia tri timeout : ' + data.data);
     let sessionContract = state.sessions[state.currentProductIndex].contract;
     let stateOfSession;
     switch (data.action) {
       case 'start':
         //TODO: Handle event when User Start a new session
         stateOfSession = await sessionContract.methods.state().call();
-        if(stateOfSession == 0){
-          await sessionContract.methods.startSession(data.data).send({from:state.account});
-        }else if(stateOfSession == 1){
+        if (stateOfSession == 0) {
+          await sessionContract.methods.startSession(data.data).send({ from: state.account });
+        } else if (stateOfSession == 1) {
           alert('session already started');
-        }else if(stateOfSession == 4){
-          await sessionContract.methods.startSession(0).send({from:state.account});
-        }else{
+        } else if (stateOfSession == 4) {
+          await sessionContract.methods.startSession(0).send({ from: state.account });
+        } else {
           alert('session already closed');
         }
         // document.location.reload();
@@ -174,14 +156,14 @@ const actions = {
       case 'stop':
         //TODO: Handle event when User Stop a session
         stateOfSession = await sessionContract.methods.state().call();
-        if(stateOfSession == 3){
+        if (stateOfSession == 3) {
           alert('can not stop session finshed');
-        }else if(stateOfSession == 4){
+        } else if (stateOfSession == 4) {
           alert('session already stopped');
-        }else{
-          try{
-            await sessionContract.methods.stopSession().send({from:state.account});
-          }catch(e){
+        } else {
+          try {
+            await sessionContract.methods.stopSession().send({ from: state.account });
+          } catch (e) {
             alert('Fail to stop session');
           }
         }
@@ -191,16 +173,16 @@ const actions = {
         //TODO: Handle event when User Pricing a product
         //The inputed Price is stored in `data`
         stateOfSession = await sessionContract.methods.state().call();
-       
-        if(stateOfSession == 1){
-          try{
-            await sessionContract.methods.priceProduct(data.data).send({from: state.account});
-          }catch(e){
+
+        if (stateOfSession == 1) {
+          try {
+            await sessionContract.methods.priceProduct(data.data).send({ from: state.account });
+          } catch (e) {
             alert('Account not yet register');
           }
-        }else if(stateOfSession == 0){
+        } else if (stateOfSession == 0) {
           alert('Session not yet start');
-        }else{
+        } else {
           alert('Session already closed');
         }
         // document.location.reload();
@@ -209,34 +191,34 @@ const actions = {
         //TODO: Handle event when User Close a session
         //The inputed Price is stored in `data`
         stateOfSession = await sessionContract.methods.state().call();
-        if(stateOfSession == 2){
-          await sessionContract.methods.calculateFinalPrice().send({from:state.account});
-        }else if(stateOfSession == 1){
-          await sessionContract.methods.closeSession().send({from:state.account});
-          await sessionContract.methods.calculateFinalPrice().send({from:state.account});
-        }else if(stateOfSession == 0){
+        if (stateOfSession == 2) {
+          await sessionContract.methods.calculateFinalPrice().send({ from: state.account });
+        } else if (stateOfSession == 1) {
+          await sessionContract.methods.closeSession().send({ from: state.account });
+          await sessionContract.methods.calculateFinalPrice().send({ from: state.account });
+        } else if (stateOfSession == 0) {
           alert('Session not yet start');
-        }else if(stateOfSession == 4){
+        } else if (stateOfSession == 4) {
           alert('Session already STOPPED');
-        }else{
+        } else {
           alert('Final price already set');
         }
         // document.location.reload();
         break;
 
-      case 'update' :
+      case 'update':
         //console.log(' product : '+data._name);
-        console.log(data.name +"  "+data.description);
-        if(data.name == undefined){
+        console.log(data.name + "  " + data.description);
+        if (data.name == undefined) {
           data.name = data._name;
         }
-        if(data.description == undefined){
+        if (data.description == undefined) {
           data.description = data._description;
         }
-        console.log(data.name +"  "+data.description);
-        if(data.name !== data._name || data.description !== data._description){
-          await sessionContract.methods.updateProduct(data.name,data.description).send({from:state.account});
-        }else{
+        console.log(data.name + "  " + data.description);
+        if (data.name !== data._name || data.description !== data._description) {
+          await sessionContract.methods.updateProduct(data.name, data.description).send({ from: state.account });
+        } else {
           alert('product\'information does not need to change');
         }
 
@@ -277,7 +259,7 @@ const actions = {
     // TODO: Load all participants from Main contract.
     // One participant should contain { address, fullname, email, nSession and deviation }
     let nParticipants = await contractFunctions.nParticipants();
-    for(let index = 0; index < nParticipants; index++){
+    for (let index = 0; index < nParticipants; index++) {
       let _address = await contractFunctions.iParticipants(index)();
       let par = await contractFunctions.participants(_address)();
       participants.push(par);
@@ -303,33 +285,33 @@ const actions = {
     // TODO: Register new participant
     state.fullname = state.profile.fullname;
     state.email = state.profile.email;
-    await mainContract.methods.register(state.fullname,state.email).send({from:state.account});
+    await mainContract.methods.register(state.fullname, state.email).send({ from: state.account });
     //const profile = {};
     // TODO: And get back the information of created participant
-    let profile = await contractFunctions.participants(state.account)(); 
+    let profile = await contractFunctions.participants(state.account)();
     actions.setProfile(profile);
     // document.location.reload();
   },
 
-  edit:(_account) =>async (state,actions) =>{
+  edit: (_account) => async (state, actions) => {
     var check = false;
-    if(_account == state.account){
+    if (_account == state.account) {
       check = true;
     }
     myfunction2(check);
   },
-  updateParticipantInfo:() =>async (state,actions) => {
+  updateParticipantInfo: () => async (state, actions) => {
     state.fullname = state.profile.fullname;
     state.email = state.profile.email;
-    let _profile = await contractFunctions.participants(state.account)(); 
+    let _profile = await contractFunctions.participants(state.account)();
     // console.log(_profile[1]+ ' '+_profile[2]);
     // console.log(state.fullname + ' '+ state.email);
-    if(_profile[1] !== state.fullname || _profile[2] !== state.email){
-      await mainContract.methods.updateParticipantInfo(state.fullname,state.email,state.account).send({from:state.account});
-    }else{
+    if (_profile[1] !== state.fullname || _profile[2] !== state.email) {
+      await mainContract.methods.updateParticipantInfo(state.fullname, state.email, state.account).send({ from: state.account });
+    } else {
       alert('Participant\'information does not need to change');
     }
-    _profile = await contractFunctions.participants(state.account)(); 
+    _profile = await contractFunctions.participants(state.account)();
     actions.setProfile(_profile);
     myfunction2(false);
     // document.location.reload();
@@ -354,24 +336,24 @@ const actions = {
       // Hint: - Call methods of Session contract to reveal all nessesary information
       //       - Use `await` to wait the response of contract
 
-      let name = await contract.methods.name().call() ; // TODO
+      let name = await contract.methods.name().call(); // TODO
       let description = await contract.methods.description().call(); // TODO
       let price = await contract.methods.proposedPrice().call(); // TODO
       let image = await contract.methods.image().call(); // TODO
       let _status = await contract.methods.state().call();
       let status;
-      if(_status == 0){
+      if (_status == 0) {
         status = 'CREATED';
-      }else if(_status == 1){
+      } else if (_status == 1) {
         status = 'ONGOING';
-      }else if(_status == 2){
+      } else if (_status == 2) {
         status = 'CLOSED';
-      }else if(_status == 3){
+      } else if (_status == 3) {
         status = 'FINSHED';
-      }else{
+      } else {
         status = 'STOPPED';
       }
-      sessions.push({ id, name, description, price, contract, image ,status});
+      sessions.push({ id, name, description, price, contract, image, status });
     }
     actions.setSessions(sessions);
   },
@@ -386,7 +368,7 @@ const actions = {
 
 const view = (
   state,
-  { getAccount, getParticipants, register, inputProfile, getSessions,updateParticipantInfo }
+  { getAccount, getParticipants, register, inputProfile, getSessions, updateParticipantInfo }
 ) => {
   return (
     <body

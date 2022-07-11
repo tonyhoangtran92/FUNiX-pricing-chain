@@ -3,7 +3,7 @@ import { Link } from '@hyperapp/router';
 
 const Fragment = (props, children) => children;
 
-const Profile = ({ profile, register, inputProfile,update}) => {
+const Profile = ({ profile, register, inputProfile, update }) => {
   const hasProfile = profile && profile.account != '0x0000000000000000000000000000000000000000';
   let newProfile = {};
   if (profile) {
@@ -36,53 +36,53 @@ const Profile = ({ profile, register, inputProfile,update}) => {
         </li>
 
 
-      <div id="updateParticipant" style="display:none;">
-        <li class='nav-title'>Update</li>
-      <li class='nav-item px-3 mb-2'>
-        <div>
-          <small class='text-muted'>
-            <b>Fullname</b>
-          </small>
+        <div id="updateParticipant" style="display:none;">
+          <li class='nav-title'>Update</li>
+          <li class='nav-item px-3 mb-2'>
+            <div>
+              <small class='text-muted'>
+                <b>Fullname</b>
+              </small>
+            </div>
+            <input
+              class='form-control form-control-sm'
+              type='text'
+              value={profile.fullname}
+              oninput={e => {
+                inputProfile({ field: 'fullname', value: e.target.value });
+              }}
+            ></input>
+          </li>
+          <li class='nav-item px-3 mb-2'>
+            <div>
+              <small class='text-muted'>
+                <b>Email</b>
+              </small>
+            </div>
+            <input
+              class='form-control form-control-sm'
+              type='email'
+              value={profile.email}
+              oninput={e => {
+                inputProfile({ field: 'email', value: e.target.value });
+              }}
+            ></input>
+          </li>
+          <li class='nav-item px-3 mb-2'>
+            <button
+              class='btn  btn-sm btn-ghost-primary btn-block '
+              type='button'
+              onclick={update}
+            >
+              Update
+            </button>
+          </li>
         </div>
-        <input
-          class='form-control form-control-sm'
-          type='text'
-          value={profile.fullname}
-          oninput={e => {
-            inputProfile({ field: 'fullname', value: e.target.value });
-          }}
-        ></input>
-      </li>
-      <li class='nav-item px-3 mb-2'>
-        <div>
-          <small class='text-muted'>
-            <b>Email</b>
-          </small>
-        </div>
-        <input
-          class='form-control form-control-sm'
-          type='email'
-          value={profile.email}
-          oninput={e => {
-            inputProfile({ field: 'email', value: e.target.value });
-          }}
-        ></input>
-      </li>
-      <li class='nav-item px-3 mb-2'>
-        <button
-          class='btn  btn-sm btn-ghost-primary btn-block '
-          type='button'
-          onclick={update}
-        >
-          Update
-        </button>
-      </li>
-      </div>
 
       </>
 
-      
-    
+
+
 
     ) : (
       <>

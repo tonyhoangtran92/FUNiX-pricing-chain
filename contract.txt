@@ -1,14 +1,21 @@
+Starting migrations...
+======================
+> Network name:    'development'
+> Network id:      5777
+> Block gas limit: 6721975 (0x6691b7)
+
+
 1_initial_migration.js
 ======================
 
    Replacing 'Migrations'
    ----------------------
-   > transaction hash:    0x40b6b860862a45dc2c7ab80294544aecd0524fef68a61bd7f6b0afff4b7c7e8c
+   > transaction hash:    0x6746506097c01bf4e17e797949a9dcf9d68e603f3e6c4d6edd6e9db30ca22112
    > Blocks: 0            Seconds: 0
-   > contract address:    0xCf8a6616851deA8605a70395b0388997a40D585d
+   > contract address:    0x65D3a8EBD21471D947Cd0AE1921Aa0F73e723e03
    > block number:        1
-   > block timestamp:     1656005761
-   > account:             0x2745fb1A08aB138B269A349f8DCA8942bd56Dae5
+   > block timestamp:     1657557874
+   > account:             0x50Be8eE606701710dBa29779d90E9a657c2c2CfB
    > balance:             99.99549526
    > gas used:            225237 (0x36fd5)
    > gas price:           20 gwei
@@ -26,12 +33,12 @@
 
    Replacing 'Main'
    ----------------
-   > transaction hash:    0xe05c74dd651357937aa2ca5537c5b0fc49d6999f88463e9f384d582995e8903d
+   > transaction hash:    0x2d472d631465d24f80a47838c972c42f799972e8cdea6fa92b635a15c0056fc2
    > Blocks: 0            Seconds: 0
-   > contract address:    0x566121f575eB9BC8df84eA883E95861B5220BA81
+   > contract address:    0x7814BBF90bDfCee7EBf3A361198DF2AE2E4eD2cE
    > block number:        3
-   > block timestamp:     1656005763
-   > account:             0x2745fb1A08aB138B269A349f8DCA8942bd56Dae5
+   > block timestamp:     1657557876
+   > account:             0x50Be8eE606701710dBa29779d90E9a657c2c2CfB
    > balance:             99.97243554
    > gas used:            1110623 (0x10f25f)
    > gas price:           20 gwei
